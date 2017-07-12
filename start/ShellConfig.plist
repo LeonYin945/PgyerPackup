@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>buildConfig</key>
+	<dict>
+		<key>appleID</key>
+		<string>meishubao@qq.com</string>
+		<key>bundleIdentity</key>
+		<string>com.yiqi.artchat</string>
+		<key>codesigningIdentity</key>
+		<string>iPhone Distribution: Beijing Yiqi Network Technology Co., Ltd.</string>
+		<key>provisioningProfileName</key>
+		<string>com.yiqi.artchat_inhouse_20170410</string>
+		<key>teamID</key>
+		<string>VX3477C4M7</string>
+	</dict>
+	<key>uploadConfig</key>
+	<dict>
+		<key>apikey</key>
+		<string>bb4fcad246755d4cc33232e535476849</string>
+		<key>userkey</key>
+		<string>ee4bca28b833be4019d34b1339834068</string>
+		<key>password</key>
+		<string>msbnb</string>
+	</dict>
+	<key>entrancePath</key>
+	<string>/Users/yinli/Desktop/work/ArtResource/PgyerPackup/</string>
+	<key>projectName</key>
+	<string>ArtChat</string>
+	<key>projectSchemeName</key>
+	<string>ArtChatTest</string>
+	<key>plistRelativePath</key>
+	<string>ArtChat/ArtChatTest.plist</string>
+	<key>codePath</key>
+	<string>/Users/yinli/Desktop/work/jenkins_Packup/workspace/artchat-iosNew1/</string>
+	<key>projectRelativePath</key>
+	<string>src/</string>
+	<key>exportPath</key>
+	<string>/Users/yinli/Desktop/work/jenkins_Packup/archiveExport/artchat_dev_test/</string>
+	<key>exportMethod</key>
+	<string>TestEnterprise</string>
+	<key>exportMethod选项说明</key>
+	<string>TestEnterprise 测试企业包</string>
+	<key>gittag</key>
+	<string>artchat20170630_v1.2.1_12106</string>
+	<key>gitbranch</key>
+	<string>dev</string>
+	<key>versionNumber</key>
+	<string>1.2.1</string>
+	<key>buildNumber</key>
+	<string>12106</string>
+	<key>upload</key>
+	<true/>
+	<key>gittag说明</key>
+	<string>设置为对应的git tag，脚本会切换到此tag打包</string>
+	<key>projectRelativePath说明</key>
+	<string>此目录底下应该为. xcodeproj的路径   且是相对于codePath的路径</string>
+	<key>projectName说明</key>
+	<string>projectName为. xcodeproj 前面部分的名称</string>
+	<key>plistRelativePath说明</key>
+	<string>此为相对路径，相对于projectRelativePath的info.plist的路径</string>
+	<key>warning</key>
+	<string>输入路径时一定要注意前后要加入 /</string>
+</dict>
+</plist>

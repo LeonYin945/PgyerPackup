@@ -1,0 +1,242 @@
+# Customise this file, documentation can be found here:
+# https://github.com/fastlane/fastlane/tree/master/fastlane/docs
+# All available actions: https://docs.fastlane.tools/actions
+# can also be listed using the `fastlane actions` command
+
+# Change the syntax highlighting to Ruby
+# All lines starting with a # are ignored when running `fastlane`
+
+# If you want to automatically update fastlane if a new version is available:
+# update_fastlane
+
+# This is the minimum version number required.
+# Update this, if you use features of a newer version
+fastlane_version "2.26.1"
+
+default_platform :ios
+
+$projectFilePath = "1"
+$workspaceFilePath = "2"
+$plistFilePath = "3"
+$schemeName = "4"
+
+def configOptions(options)
+  projectName = options[:projectName]
+	projectSchemeName = options[:projectSchemeName]
+	plistRelativePath = options[:plistRelativePath]
+
+	$projectFilePath = "#{projectName}.xcodeproj"
+	$workspaceFilePath = "#{projectName}.xcworkspace"
+	$plistFilePath = "#{plistRelativePath}"
+	$schemeName = "#{projectSchemeName}"
+	
+end
+
+#Update Xcode Development Team ID
+def update_project_developmentTeam(options)
+
+  update_project_team(
+    path: "#$projectFilePath" ,
+    teamid: "#{options[:teamID]}"
+  )
+
+end
+
+# 更新bundle信息
+def update_app_bundle(options)
+
+	artStudioPath = options[:artStudioPath]
+		update_app_identifier(
+		xcodeproj: "#$projectFilePath" ,
+		plist_path: "#$plistFilePath",
+		app_identifier: "#{options[:bundleIdentity]}"
+	)
+
+end
+
+# 更新Bundle display name 
+def update_app_name(options)
+
+    set_info_plist_value(
+        "#$plistFilePath",
+        "CFBundleDisplayName",
+        "#{options[:name]}"
+    )
+
+end
+
+def prepare_version(options)
+
+    set_info_plist_value(
+        "#$plistFilePath",
+        "CFBundleShortVersionString",
+        options[:version]
+    )
+
+    set_info_plist_value(
+        "#$plistFilePath",
+        "CFBundleVersion",
+        options[:build]
+    )
+end
+
+# 设置Info_plist_value里的值
+def set_info_plist_value(path,key,value)
+    #sh 这里是fastline目录里
+    sh "/usr/libexec/PlistBuddy -c \"set :#{key} #{value}\" ../#{path}"
+end
+
+def generate_ipa(exportMethod,options)
+  #say 'generate ipa'
+
+  fullVersion = options[:version] + '.' + options[:build]
+  displayName = options[:name]
+	outputName = options[:outputName]
+	buildNum = options[:build]
+  exportPath = options[:exportPath]
+  shellPath = options[:shellPath]
+  codesigningIdentity = options[:codesigningIdentity]
+  teamId = options[:teamID]
+  provisioningProfileName = options[:provisioningProfileName]
+  provisioningProfilePath = "#{shellPath}/Cert_Identifiers_Profiles/provisioning_profile/#{provisioningProfileName}.mobileprovision"
+  appleID = options[:appleID]
+  bundleIdentity = options[:bundleIdentity]
+  uuid = options[:profileUUID]
+  adhoc = false
+  if "#{exportMethod}" == "ad-hoc"
+    adhoc = true  
+  end
+
+  puts "bundleIdentity#{bundleIdentity}"
+  puts "teamId:#{teamId}"
+  puts "codesigningIdentity:#{codesigningIdentity}"
+  puts "provisioningProfileName:#{provisioningProfileName}"
+  puts "profileUUID:#{uuid}"
+
+  uuidlength = uuid.length
+  puts "uuidlength:#{uuidlength}"
+  if uuidlength <= 0
+    cert(
+      development: false,
+      #force: true,
+      username: "#{appleID}",
+      team_id: "#{teamId}",
+      team_name: "#{codesigningIdentity}",
+      output_path: "#{shellPath}/Cert_Identifiers_Profiles/certificates/"
+    )
+
+    uuid = sigh(
+      username: "#{appleID}",
+      team_id: "#{teamId}",
+      filename: "#{provisioningProfileName}.mobileprovision",
+      app_identifier: "#{bundleIdentity}",
+      adhoc: "#{adhoc}",
+      #force: true,
+      provisioning_name: "#{provisioningProfileName}",
+      ignore_profiles_with_different_name: true,
+      output_path: "#{shellPath}/Cert_Identifiers_Profiles/provisioning_profile/",
+      platform: "ios"
+    )
+  end
+
+  sh "open #{provisioningProfilePath}"
+
+# 设置工程的 Automatic Managing signing 配置为 NO
+  automatic_code_signing(
+    path: "#$projectFilePath",
+    use_automatic_signing: false
+  )
+
+# 打包
+  gym(
+    scheme: "#$schemeName",
+    workspace: "#$workspaceFilePath",
+    silent: true,
+    clean: true,
+    buildlog_path: "#{shellPath}/buildTemp",
+    output_directory: "#{shellPath}/buildTemp",
+    output_name: "#{outputName}.ipa",
+    configuration: "Release",
+    export_method: "#{exportMethod}",
+    xcargs: "PROVISIONING_PROFILE_SPECIFIER='#{uuid}' PROVISIONING_PROFILE='#{uuid}' PRODUCT_BUNDLE_IDENTIFIER='#{bundleIdentity}' CODE_SIGN_IDENTITY='#{codesigningIdentity}' DEVELOPMENT_TEAM='#{teamId}'",
+    codesigning_identity: "#{codesigningIdentity}",
+    export_team_id: "#{teamId}"
+    # sdk: "iphoneos10.3"
+    )
+
+# 将ipa包以及dsym改名并放到设置的目录
+	sh "
+    cd #{exportPath};
+    mkdir #{buildNum};
+    mkdir #{buildNum}_dSYM/;
+    mv #{shellPath}/buildTemp/#{outputName}.ipa #{buildNum}/;
+    mv #{shellPath}/buildTemp/#{outputName}.app.dSYM.zip #{shellPath}/buildTemp/#{outputName}_#{buildNum}_#{bundleIdentity}.zip;
+    mv #{shellPath}/buildTemp/#{outputName}_#{buildNum}_#{bundleIdentity}.zip #{buildNum}_dSYM/;
+    rm -rf #{shellPath}/buildTemp;
+  "
+
+end
+
+
+platform :ios do
+
+  before_all do
+    update_fastlane(
+      no_update: true
+    )
+    clean_build_artifacts
+sh "pwd"
+    cocoapods(
+      repo_update: false,
+      #podfile: "../tefg"
+    )
+    ENV["SLACK_URL"] = "https://hooks.slack.com/services/zunyuan.li"
+    #设置120秒的打包超时时长
+    ENV["FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT"] = "120"
+    #设置120秒的打包重试次数,单个包打包失败最多重试1小时
+    ENV["FASTLANE_XCODEBUILD_SETTINGS_RETRIES"] = "30"
+    #设置120秒超时时长
+    ENV["FASTLANE_XCODE_LIST_TIMEOUT"]="120"
+  end
+
+  desc "Runs all the tests"
+  lane :test do
+    # snapshot
+  end
+
+  desc "Generate TestEnterprise Ipa"
+  lane :TestEnterprise do |options|
+
+  	configOptions(options)
+    prepare_version(options)
+    update_app_name(options)
+    update_app_bundle(options)
+    update_project_developmentTeam(options)
+    generate_ipa("enterprise",options)
+  end
+
+  # You can define as many lanes as you want
+  after_all do |lane|
+    # This block is called, only if the executed lane was successful
+    
+     #slack(
+     #  message: "Successfully deployed new App Update."
+     #)
+  end
+
+
+  error do |lane, exception|
+     #slack(
+     #  message: exception.message,
+     #  success: false
+     #)
+  end
+end
+
+
+# More information about multiple platforms in fastlane: https://github.com/fastlane/fastlane/blob/master/fastlane/docs/Platforms.md
+# All available actions: https://docs.fastlane.tools/actions
+
+# fastlane reports which actions are used
+# No personal data is recorded. Learn more at https://github.com/fastlane/enhancer
+
