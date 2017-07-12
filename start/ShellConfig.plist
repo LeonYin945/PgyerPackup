@@ -5,45 +5,45 @@
 	<key>buildConfig</key>
 	<dict>
 		<key>appleID</key>
-		<string>meishubao@qq.com</string>
+		<string></string>
 		<key>bundleIdentity</key>
-		<string>com.yiqi.artchat</string>
+		<string></string>
 		<key>codesigningIdentity</key>
-		<string>iPhone Distribution: Beijing Yiqi Network Technology Co., Ltd.</string>
+		<string></string>
 		<key>provisioningProfileName</key>
-		<string>com.yiqi.artchat_inhouse_20170410</string>
+		<string></string>
 		<key>teamID</key>
-		<string>VX3477C4M7</string>
+		<string></string>
 	</dict>
 	<key>uploadConfig</key>
 	<dict>
 		<key>apikey</key>
-		<string>bb4fcad246755d4cc33232e535476849</string>
+		<string></string>
 		<key>userkey</key>
-		<string>ee4bca28b833be4019d34b1339834068</string>
+		<string></string>
 		<key>password</key>
-		<string>msbnb</string>
+		<string></string>
 	</dict>
 	<key>entrancePath</key>
-	<string>/Users/yinli/Desktop/work/ArtResource/PgyerPackup/</string>
+	<string></string>
 	<key>projectName</key>
-	<string>ArtChat</string>
+	<string></string>
 	<key>projectSchemeName</key>
-	<string>ArtChatTest</string>
+	<string></string>
 	<key>plistRelativePath</key>
-	<string>ArtChat/ArtChatTest.plist</string>
+	<string></string>
 	<key>codePath</key>
-	<string>/Users/yinli/Desktop/work/jenkins_Packup/workspace/artchat-iosNew1/</string>
+	<string></string>
 	<key>projectRelativePath</key>
-	<string>src/</string>
+	<string></string>
 	<key>exportPath</key>
-	<string>/Users/yinli/Desktop/work/jenkins_Packup/archiveExport/artchat_dev_test/</string>
+	<string></string>
 	<key>exportMethod</key>
 	<string>TestEnterprise</string>
 	<key>exportMethod选项说明</key>
 	<string>TestEnterprise 测试企业包</string>
 	<key>gittag</key>
-	<string>artchat20170630_v1.2.1_12106</string>
+	<string></string>
 	<key>gitbranch</key>
 	<string>dev</string>
 	<key>versionNumber</key>
