@@ -97,13 +97,22 @@ function upload() {
             local appIdentifier=$(echo `echo ${res}| jq .data.appIdentifier` | sed 's/\"//g')
             local appShortcutUrl=$(echo `echo ${res}| jq .data.appShortcutUrl` | sed 's/\"//g')
             local downloadUrl="https://www.pgyer.com/${appShortcutUrl}"
+            local appKey=$(echo `echo ${res}| jq .data.appKey` | sed 's/\"//g')
+            local cruBuildUrl="https://www.pgyer.com/${appKey}"
+            local appFileSize=$(echo `echo ${res}| jq .data.appFileSize` | sed 's/\"//g')
+            local appUpdated=$(echo `echo ${res}| jq .data.appUpdated` | sed 's/\"//g')
+            local appQRCodeURL=$(echo `echo ${res}| jq .data.appQRCodeURL` | sed 's/\"//g')
+            local appUpdateDescription=$(echo `echo ${res}| jq .data.appUpdateDescription` | sed 's/\"//g')
+
             echo "\033[33m APP名称:${appName} \033[0m"
             echo "\033[33m app版本:${appVersion} \033[0m"
             echo "\033[33m app版本号:${appVersionNo} \033[0m"
-            echo "\033[33m 地址:${downloadUrl} \033[0m"
+            echo "\033[33m 全部版本地址:${downloadUrl} \033[0m"
+            echo "\033[33m 当前版本地址:${cruBuildUrl} \033[0m"
             echo "\033[33m 密码:${PASSWORD} \033[0m"
             echo "\033[33m 蒲公英build号:${appBuildVersion} \033[0m"
-            `echo "APP名称:${appName}\r\napp版本:${appVersion}\r\napp版本号:${appVersionNo}\r\n地址:${downloadUrl}\r\n密码:${PASSWORD}\r\n蒲公英build号:${appBuildVersion}" | pbcopy`
+            echo "\033[33m 说明:\r\n${appUpdateDescription} \033[0m"
+            `echo "APP名称:${appName}\r\napp版本:${appVersion}\r\napp版本号:${appVersionNo}\r\n全部版本地址:${downloadUrl}\r\n当前版本地址:${cruBuildUrl}\r\n密码:${PASSWORD}\r\n蒲公英build号:${appBuildVersion}\r\n说明:\r\n${appUpdateDescription} " | pbcopy`
             echo "\033[32m ---------------------蒲公英相关信息已复制--------------------\033[0m"
             break
         else

@@ -20,7 +20,7 @@ newcode_path="${pack_path}/code"
 new_script="${pack_path}/script"
 echo "\033[32m ------------------$(date "+%H:%M:%S")开始拷贝------------------ \033[0m"
 cp -r "${codePath}" "${newcode_path}/"
-rsync -r "${entrancePath}" "${new_script}/" --exclude=start
+rsync -r "${entrancePath}" "${new_script}/" --exclude "start"
 echo "\033[32m ------------------$(date "+%H:%M:%S")拷贝完成------------------ \033[0m"
 echo
 echo "\033[32m -----------------开始执行脚本---------------- \033[0m"

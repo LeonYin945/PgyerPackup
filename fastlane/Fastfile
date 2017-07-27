@@ -209,7 +209,7 @@ sh "pwd"
 
   	configOptions(options)
     prepare_version(options)
-    update_app_name(options)
+    # update_app_name(options)
     update_app_bundle(options)
     update_project_developmentTeam(options)
     generate_ipa("enterprise",options)
