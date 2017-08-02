@@ -54,6 +54,7 @@ function upload() {
     PASSWORD=$5
     gittag=$6
     outputPath=$7
+    updateInfo=$8
 
     cd ${codePath}
     local installType="1"
@@ -62,16 +63,16 @@ function upload() {
         installType="2"
     fi
 
-    MSG="上传版本：gittag：${gittag}"
+    local MSG="上传版本：gittag：${gittag} \r\n${updateInfo}"
     local gittagLenght=${#gittag}
     if [[ ${gittagLenght} == "0"  ]]; then
-        local MSG=`git log -1`
+         MSG="$(git log -1)"
+         MSG=$(echo ${MSG} | sed ':a;N;$!ba;s/\n/ /g')
     fi
-    MSG=$(echo ${MSG} | sed 's/\r/ /g') 
-    MSG=$(echo ${MSG} | sed 's/\n/ /g')
-    
+    MSG="${MSG} ${updateInfo}"
+
     echo "\033[32m 开始打包! \033[0m" 
-    local retryCount=3
+    local retryCount=99999999999999
     for ((i=1;i<=retryCount;i++)) do
         echo "\033[32m ----------------upload开始执行${i}/${retryCount}---------------- \033[0m"
         echo "\033[33m codePath:${codePath} \033[0m"
@@ -84,6 +85,7 @@ function upload() {
         echo "\033[33m MSG:${MSG} \033[0m"
 
         local res=`curl -F "file=@${outputPath}" -F "uKey=${userkey}" -F "_api_key=${apikey}" -F "updateDescription=${MSG}" -F "installType=${installType}" -F "password=${PASSWORD}" https://qiniu-storage.pgyer.com/apiv1/app/upload`
+        res=$(echo ${res} | sed ':a;N;$!ba;s/\n/ /g')
         local code=`echo ${res}| jq .code`
         # echo res:${res}
         # echo code:${code}
@@ -111,14 +113,17 @@ function upload() {
             echo "\033[33m 当前版本地址:${cruBuildUrl} \033[0m"
             echo "\033[33m 密码:${PASSWORD} \033[0m"
             echo "\033[33m 蒲公英build号:${appBuildVersion} \033[0m"
-            echo "\033[33m 说明:\r\n${appUpdateDescription} \033[0m"
-            `echo "APP名称:${appName}\r\napp版本:${appVersion}\r\napp版本号:${appVersionNo}\r\n全部版本地址:${downloadUrl}\r\n当前版本地址:${cruBuildUrl}\r\n密码:${PASSWORD}\r\n蒲公英build号:${appBuildVersion}\r\n说明:\r\n${appUpdateDescription} " | pbcopy`
+            echo "\033[33m 说明:\r\n${MSG} \033[0m"
+            `echo "APP名称:${appName}\r\napp版本:${appVersion}\r\napp版本号:${appVersionNo}\r\n全部版本地址:${downloadUrl}\r\n当前版本地址:${cruBuildUrl}\r\n密码:${PASSWORD}\r\n蒲公英build号:${appBuildVersion}\r\n说明:\r\n${MSG} " | pbcopy`
             echo "\033[32m ---------------------蒲公英相关信息已复制--------------------\033[0m"
             break
         else
             echo
             if [[ ${i} == ${retryCount} ]]; then 
-            echo "\033[31m ----------------------upload${retryCount}次失败，请确认网络环境畅通后重试---------------------------\033[0m"
+                echo "\033[31m ----------------------upload${retryCount}次失败，请确认网络环境畅通后重试---------------------------\033[0m"
+            else 
+                echo "\033[31m ----------------------upload${i}次失败，5s后重试---------------------------\033[0m"
+                sleep 5s
             fi
         fi
     done

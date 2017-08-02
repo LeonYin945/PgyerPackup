@@ -24,10 +24,11 @@ rm -rf ${projectPath}fastlane
 cp -r ${shellPath}/fastlane/ ${projectPath}fastlane
 
 # 删除原输出路径
-rm -rf ${exportPath}
-mkdir $exportPath
-mkdir ${exportPath}/${buildNumber}
-mkdir ${exportPath}/${buildNumber}_dSYM
+cd ${exportPath}
+rm -rf export/
+mkdir export/
+mkdir export/${buildNumber}
+mkdir export/${buildNumber}_dSYM
 
 #到主目录下
 cd $projectPath

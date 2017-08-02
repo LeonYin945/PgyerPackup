@@ -23,8 +23,14 @@ cp -r "${codePath}" "${newcode_path}/"
 rsync -r "${entrancePath}" "${new_script}/" --exclude "start"
 echo "\033[32m ------------------$(date "+%H:%M:%S")拷贝完成------------------ \033[0m"
 echo
+echo "\033[32m ------------------更新说明------------------ \033[0m"
+set +e
+updateInfo=$(cat updateInfo.txt)
+set -e
+echo "\033[32m ${updateInfo} \033[0m"
+echo
 echo "\033[32m -----------------开始执行脚本---------------- \033[0m"
-sh ${new_script}/entrance.sh "${configPlist_path}" "${newcode_path}/"
+sh ${new_script}/entrance.sh "${configPlist_path}" "${newcode_path}/" "${updateInfo}"
 
 #退出命令执行出错既退出模式
 set +e

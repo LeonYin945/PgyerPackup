@@ -7,6 +7,7 @@ echo "codePath:${2}"
 
 configPlist_path=$1
 codePath=$2
+updateInfo=$3
 echo "packup shellConfigPath: ${configPlist_path}"
 echo "codePath:${codePath}"
 
@@ -52,12 +53,12 @@ password=`/usr/libexec/PlistBuddy -c "print :uploadConfig:password" $configPlist
 githandle "${codePath}" "${shell_path}" "${gittag}" "${gitbranch}"
 
 # 打包
-sh build.sh "${exportMethod}" "${versionNumber}" "${buildNumber}" "${projectPath}" "${exportPath}" "${shell_path}" "${teamID}" "${codesigningIdentity}" "${provisioningProfileName}" "${appleID}" "${bundleIdentity}" "${projectSchemeName}" "${plistRelativePath}" "${projectName}" "${outputName}"
+# sh build.sh "${exportMethod}" "${versionNumber}" "${buildNumber}" "${projectPath}" "${exportPath}" "${shell_path}" "${teamID}" "${codesigningIdentity}" "${provisioningProfileName}" "${appleID}" "${bundleIdentity}" "${projectSchemeName}" "${plistRelativePath}" "${projectName}" "${outputName}"
 
 # 上传 entranceExtension.sh
 if [[ ${upload} == true ]]; then
-    outputPath="${exportPath}${buildNumber}/${outputName}.ipa"
-    upload "${codePath}" "${shell_path}" "${userkey}" "${apikey}" "${password}" "${gittag}" "${outputPath}"
+    outputPath="${exportPath}/export/${buildNumber}/${outputName}.ipa"
+    upload "${codePath}" "${shell_path}" "${userkey}" "${apikey}" "${password}" "${gittag}" "${outputPath}" "${updateInfo}"
 
 fi
 
