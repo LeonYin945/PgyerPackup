@@ -2,13 +2,13 @@
 shell脚本+fastlane打包+蒲公英上传
 ## 一、目录文件说明
 
-1. build.sh 调用 fastlane 的打包脚本
-2. entrance.sh：传入ShellConfig.plist的地址即可开始任务
-3. Cert_Identifiers_Profiles 此目录下可预置profile，如果对应的profile存在即不会从网络下载
-4. entranceExtension.sh 其中包含git版本处理，上传
-5. fastlane 的打包脚本，需要安装 fastlane 环境。
-6. getProfileUUID.sh 获取profile的uuid
-7. start 此目录下存放start与ShellConfig.plist 配置文件，plist配置好后，点击start文件即可开始任务。此文件夹可复制多份存放在任意目录下，配置相应的shellConfig即可实现，单脚本，多配置打包。
+* build.sh 调用 fastlane 的打包脚本
+* entrance.sh：传入ShellConfig.plist的地址即可开始任务
+* Cert_Identifiers_Profiles 此目录下可预置profile，如果对应的profile存在即不会从网络下载
+* entranceExtension.sh 其中包含git版本处理，上传
+* fastlane 的打包脚本，需要安装 fastlane 环境。
+* getProfileUUID.sh 获取profile的uuid
+* start 此目录下存放start与ShellConfig.plist 配置文件，plist配置好后，点击start文件即可开始任务。此文件夹可复制多份存放在任意目录下，配置相应的shellConfig即可实现，单脚本，多配置打包。
 
 ## 二、ShellConfig.plist  配置说明
 
