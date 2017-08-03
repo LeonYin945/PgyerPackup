@@ -53,7 +53,7 @@ password=`/usr/libexec/PlistBuddy -c "print :uploadConfig:password" $configPlist
 githandle "${codePath}" "${shell_path}" "${gittag}" "${gitbranch}"
 
 # 打包
-# sh build.sh "${exportMethod}" "${versionNumber}" "${buildNumber}" "${projectPath}" "${exportPath}" "${shell_path}" "${teamID}" "${codesigningIdentity}" "${provisioningProfileName}" "${appleID}" "${bundleIdentity}" "${projectSchemeName}" "${plistRelativePath}" "${projectName}" "${outputName}"
+sh build.sh "${exportMethod}" "${versionNumber}" "${buildNumber}" "${projectPath}" "${exportPath}" "${shell_path}" "${teamID}" "${codesigningIdentity}" "${provisioningProfileName}" "${appleID}" "${bundleIdentity}" "${projectSchemeName}" "${plistRelativePath}" "${projectName}" "${outputName}"
 
 # 上传 entranceExtension.sh
 if [[ ${upload} == true ]]; then
