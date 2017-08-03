@@ -29,7 +29,7 @@ def configOptions(options)
 	$workspaceFilePath = "#{projectName}.xcworkspace"
 	$plistFilePath = "#{plistRelativePath}"
 	$schemeName = "#{projectSchemeName}"
-	
+
 end
 
 #Update Xcode Development Team ID
@@ -54,7 +54,7 @@ def update_app_bundle(options)
 
 end
 
-# 更新Bundle display name 
+# 更新Bundle display name
 def update_app_name(options)
 
     set_info_plist_value(
@@ -104,7 +104,7 @@ def generate_ipa(exportMethod,options)
   uuid = options[:profileUUID]
   adhoc = false
   if "#{exportMethod}" == "ad-hoc"
-    adhoc = true  
+    adhoc = true
   end
 
   puts "bundleIdentity#{bundleIdentity}"
@@ -167,6 +167,7 @@ def generate_ipa(exportMethod,options)
 # 将ipa包以及dsym改名并放到设置的目录
 	sh "
     cd #{exportPath};
+    cd export/;
     mkdir #{buildNum};
     mkdir #{buildNum}_dSYM/;
     mv #{shellPath}/buildTemp/#{outputName}.ipa #{buildNum}/;
@@ -218,7 +219,7 @@ sh "pwd"
   # You can define as many lanes as you want
   after_all do |lane|
     # This block is called, only if the executed lane was successful
-    
+
      #slack(
      #  message: "Successfully deployed new App Update."
      #)
@@ -239,4 +240,3 @@ end
 
 # fastlane reports which actions are used
 # No personal data is recorded. Learn more at https://github.com/fastlane/enhancer
-
