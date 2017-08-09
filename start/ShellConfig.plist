@@ -23,6 +23,8 @@
 		<string></string>
 		<key>password</key>
 		<string></string>
+		<key>firApiToken</key>
+		<string></string>
 	</dict>
 	<key>entrancePath</key>
 	<string></string>
@@ -52,6 +54,10 @@
 	<string>12106</string>
 	<key>upload</key>
 	<true/>
+	<key>uploadType</key>
+	<string></string>
+	<key>uploadType说明</key>
+	<string>Pgyer上传至蒲公英  Fir 上传至fir.im  </string>
 	<key>gittag说明</key>
 	<string>设置为对应的git tag，脚本会切换到此tag打包</string>
 	<key>projectRelativePath说明</key>

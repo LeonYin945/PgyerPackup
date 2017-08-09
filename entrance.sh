@@ -45,9 +45,11 @@ provisioningProfileName=`/usr/libexec/PlistBuddy -c "print :buildConfig:provisio
 teamID=`/usr/libexec/PlistBuddy -c "print :buildConfig:teamID" $configPlist_path`
 # upload config
 upload=`/usr/libexec/PlistBuddy -c "print :upload" $configPlist_path`
+uploadType=`/usr/libexec/PlistBuddy -c "print :uploadType" $configPlist_path`
 apikey=`/usr/libexec/PlistBuddy -c "print :uploadConfig:apikey" $configPlist_path`
 userkey=`/usr/libexec/PlistBuddy -c "print :uploadConfig:userkey" $configPlist_path`
 password=`/usr/libexec/PlistBuddy -c "print :uploadConfig:password" $configPlist_path`
+firApiToken=`/usr/libexec/PlistBuddy -c "print :uploadConfig:firApiToken" $configPlist_path`
 
 # 处理代码git版本  entranceExtension.sh
 githandle "${codePath}" "${shell_path}" "${gittag}" "${gitbranch}"
@@ -58,7 +60,11 @@ sh build.sh "${exportMethod}" "${versionNumber}" "${buildNumber}" "${projectPath
 # 上传 entranceExtension.sh
 if [[ ${upload} == true ]]; then
     outputPath="${exportPath}/export/${buildNumber}/${outputName}.ipa"
-    upload "${codePath}" "${shell_path}" "${userkey}" "${apikey}" "${password}" "${gittag}" "${outputPath}" "${updateInfo}"
+    if [[ ${uploadType} = "Fir"  ]]; then
+      firUpload "${codePath}" "${shell_path}" "${firApiToken}" "${gittag}" "${outputPath}" "${updateInfo}" "${bundleIdentity}" "${versionNumber}" "${buildNumber}"
+    else
+      pgyerUpload "${codePath}" "${shell_path}" "${userkey}" "${apikey}" "${password}" "${gittag}" "${outputPath}" "${updateInfo}"
+    fi
 
 fi
 

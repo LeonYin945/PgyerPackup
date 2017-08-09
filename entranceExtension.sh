@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #任何命令执行出错既退出
-set -e 
+set -e
 
 function githandle() {
     codePath=$1
@@ -9,14 +9,14 @@ function githandle() {
     gittag=${3}
     gitbranch=${4}
 
-    echo "\033[32m 开始处理git版本! \033[0m" 
+    echo "\033[32m 开始处理git版本! \033[0m"
     echo "\033[32m --------------------------------------------------------------- \033[0m"
     echo "\033[33m codePath:${codePath} \033[0m"
     echo "\033[33m shellPath:${shell_path} \033[0m"
     echo "\033[33m gittag:${gittag} \033[0m"
     echo "\033[33m gitbranch:${gitbranch} \033[0m"
     echo
-    
+
     cd ${codePath}
     gittag=${gittag// /}
     gitbranch=${gitbranch// /}
@@ -27,7 +27,7 @@ function githandle() {
         git checkout ${gittag}
         echo "\033[32m 已设置tag，切换到gittag:${gittag} \033[0m"
     else
-        
+
         local gitbranchLenght=${#gitbranch}
         if [[ ${gitbranchLenght} != "0"  ]]; then
             git checkout .
@@ -46,7 +46,91 @@ function packaging() {
     echo packaging
 }
 
-function upload() {
+function firUpload() {
+  codePath=$1
+  shell_path=$2
+  firApiToken=$3
+  gittag=$4
+  outputPath=$5
+  updateInfo=$6
+  bundleIdentity=$7
+  versionNumber=${8}
+  buildNumber=${9}
+
+  cd ${codePath}
+  local installType="1"
+  local passwordLenght=${#PASSWORD}
+  if [[ ${passwordLenght} != "0"  ]]; then
+      installType="2"
+  fi
+
+  local MSG="上传版本：gittag：${gittag} \r\n${updateInfo}"
+  local gittagLenght=${#gittag}
+  if [[ ${gittagLenght} == "0"  ]]; then
+       MSG="$(git log -1)"
+       MSG=$(echo ${MSG} | sed ':a;N;$!ba;s/\n/ /g')
+  fi
+  MSG="${MSG} ${updateInfo}"
+
+  echo "\033[32m 开始上传! \033[0m"
+  local retryCount=99999999999999
+  for ((i=1;i<=retryCount;i++)) do
+      echo "\033[32m ----------------upload开始执行${i}/${retryCount}---------------- \033[0m"
+      echo "\033[33m codePath:${codePath} \033[0m"
+      echo "\033[33m shellPath:${shell_path} \033[0m"
+      echo "\033[33m outputPath:${outputPath} \033[0m"
+      echo "\033[33m gittag:${gittag} \033[0m"
+      echo "\033[33m firApiToken:${firApiToken} \033[0m"
+      echo "\033[33m MSG:${MSG} \033[0m"
+
+# 上传cert
+      echo "\033[32m 上传cert! \033[0m"
+      local certRes=`curl -X "POST" "http://api.fir.im/apps" \
+      -H "Content-Type: application/json" \
+      -d "{\"type\":\"ios\", \"bundle_id\":\"${bundleIdentity}\", \"api_token\":\"${firApiToken}\"}"`
+      # echo certRes:${certRes}
+      $(echo `echo ${res}| jq .data.appName` | sed 's/\"//g')
+      local binaryKey=$(echo `echo ${certRes}| jq .cert.binary.key` | sed 's/\"//g')
+      local binaryToken=$(echo `echo ${certRes}| jq .cert.binary.token` | sed 's/\"//g')
+      local binaryUploadUrl=$(echo `echo ${certRes}| jq .cert.binary.upload_url` | sed 's/\"//g')
+      echo binaryKey:${binaryKey}
+      echo binaryToken:$binaryToken
+      echo binaryUploadUrl:$binaryUploadUrl
+
+# 上传文件
+      echo "\033[32m 上传App! \033[0m"
+      local res=`curl   -F "key=${binaryKey}"              \
+       -F "token=${binaryToken}"             \
+       -F "file=@${outputPath}"            \
+       -F "x:name=测试"             \
+       -F "x:version=${versionNumber}"         \
+       -F "x:build=${buildNumber}"               \
+       -F "x:release_type=Inhouse"   \
+       -F "x:changelog=${MSG}"       \
+       ${binaryUploadUrl}`
+      # local res=`curl -F "file=@${outputPath}" -F "uKey=${userkey}" -F "_api_key=${apikey}" -F "updateDescription=${MSG}" -F "installType=${installType}" -F "password=${PASSWORD}" https://qiniu-storage.pgyer.com/apiv1/app/upload`
+      res=$(echo ${res} | sed ':a;N;$!ba;s/\n/ /g')
+      local is_completed=`echo ${res}| jq .is_completed`
+      echo res:${res}
+      # echo code:${code}
+      if [[ ${is_completed} == "true" ]]; then
+        echo "\033[32m ----------------------upload成功---------------------------\033[0m"
+        # local appName=$(echo `echo ${res}| jq .data.appName` | sed 's/\"//g')
+      else
+          echo
+          if [[ ${i} == ${retryCount} ]]; then
+              echo "\033[31m ----------------------upload${retryCount}次失败，请确认网络环境畅通后重试---------------------------\033[0m"
+          else
+              echo "\033[31m ----------------------upload${i}次失败，5s后重试---------------------------\033[0m"
+              sleep 5s
+          fi
+      fi
+      break
+  done
+  cd ${shell_path}
+}
+
+function pgyerUpload() {
     codePath=$1
     shell_path=$2
     userkey=$3
@@ -71,7 +155,7 @@ function upload() {
     fi
     MSG="${MSG} ${updateInfo}"
 
-    echo "\033[32m 开始打包! \033[0m" 
+    echo "\033[32m 开始上传! \033[0m"
     local retryCount=99999999999999
     for ((i=1;i<=retryCount;i++)) do
         echo "\033[32m ----------------upload开始执行${i}/${retryCount}---------------- \033[0m"
@@ -119,9 +203,9 @@ function upload() {
             break
         else
             echo
-            if [[ ${i} == ${retryCount} ]]; then 
+            if [[ ${i} == ${retryCount} ]]; then
                 echo "\033[31m ----------------------upload${retryCount}次失败，请确认网络环境畅通后重试---------------------------\033[0m"
-            else 
+            else
                 echo "\033[31m ----------------------upload${i}次失败，5s后重试---------------------------\033[0m"
                 sleep 5s
             fi
@@ -132,4 +216,3 @@ function upload() {
 
 #退出命令执行出错既退出模式
 set +e
-
