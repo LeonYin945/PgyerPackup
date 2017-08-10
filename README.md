@@ -1,5 +1,5 @@
 # PgyerPackup
-shell脚本+fastlane打包+蒲公英上传
+shell+git+fastlane打包+蒲公英或fir.im上传
 ## 一、目录文件说明
 
 * build.sh 调用 fastlane 的打包脚本
@@ -29,7 +29,9 @@ shell脚本+fastlane打包+蒲公英上传
 
 * upload：YES OR NO
 
-* uploadConfig：必须配置 apikey，userkey从蒲公英获取，password为下载时的密码
+* uploadConfig：必须配置 apikey，userkey从蒲公英获取，password为下载时的密码，firApiToken为 fir.im 的apitoken
+
+* uploadType：为空时默认为Pgyer，设置 Fir 则上传至fir.im
 
 * buildConfig：必须配置，一个也不能少
 
