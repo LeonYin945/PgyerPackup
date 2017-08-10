@@ -88,13 +88,16 @@ function firUpload() {
       local certRes=`curl -X "POST" "http://api.fir.im/apps" \
       -H "Content-Type: application/json" \
       -d "{\"type\":\"ios\", \"bundle_id\":\"${bundleIdentity}\", \"api_token\":\"${firApiToken}\"}"`
-      # echo certRes:${certRes}
-      $(echo `echo ${res}| jq .data.appName` | sed 's/\"//g')
+      echo certRes:${certRes}
       local binaryKey=$(echo `echo ${certRes}| jq .cert.binary.key` | sed 's/\"//g')
       local binaryToken=$(echo `echo ${certRes}| jq .cert.binary.token` | sed 's/\"//g')
       local binaryUploadUrl=$(echo `echo ${certRes}| jq .cert.binary.upload_url` | sed 's/\"//g')
-      echo binaryKey:${binaryKey}
-      echo binaryToken:$binaryToken
+      local appShortUrl=$(echo `echo ${certRes}| jq .short` | sed 's/\"//g')
+      local release_id=$(echo `echo ${certRes}| jq .id` | sed 's/\"//g')
+      local downloadUrl="https://fir.im/${appShortUrl}"
+      local curBuildUrl="${downloadUrl}?release_id=${release_id}"
+      # echo binaryKey:${binaryKey}
+      # echo binaryToken:$binaryToken
       echo binaryUploadUrl:$binaryUploadUrl
 
 # 上传文件
@@ -116,6 +119,15 @@ function firUpload() {
       if [[ ${is_completed} == "true" ]]; then
         echo "\033[32m ----------------------upload成功---------------------------\033[0m"
         # local appName=$(echo `echo ${res}| jq .data.appName` | sed 's/\"//g')
+        echo "\033[33m APP名称:${appName} \033[0m"
+        echo "\033[33m app版本:${versionNumber} \033[0m"
+        echo "\033[33m app版本号:${buildNumber} \033[0m"
+        echo "\033[33m 最新版本地址:${downloadUrl} \033[0m"
+        # echo "\033[33m 当前版本地址:${curBuildUrl} \033[0m"
+        echo "\033[33m 说明:\r\n${MSG} \033[0m"
+        `echo "APP名称:${appName}\r\napp版本:${versionNumber}\r\napp版本号:${buildNumber}\r\n最新版本地址:${downloadUrl}\r\n说明:\r\n${MSG} " | pbcopy`
+        echo "\033[32m ---------------------fir.im相关信息已复制--------------------\033[0m"
+        break
       else
           echo
           if [[ ${i} == ${retryCount} ]]; then
@@ -125,7 +137,6 @@ function firUpload() {
               sleep 5s
           fi
       fi
-      break
   done
   cd ${shell_path}
 }
