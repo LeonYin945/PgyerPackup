@@ -162,8 +162,8 @@ function pgyerUpload() {
     local gittagLenght=${#gittag}
     if [[ ${gittagLenght} == "0"  ]]; then
          MSG="$(git log -1)"
-         MSG=$(echo ${MSG} | sed ':a;N;$!ba;s/\n/ /g')
     fi
+    MSG=$(echo ${MSG} | sed ':a;N;$!ba;s/\n/ /g')
     MSG="${MSG} ${updateInfo}"
 
     echo "\033[32m 开始上传! \033[0m"
@@ -182,7 +182,7 @@ function pgyerUpload() {
         local res=`curl -F "file=@${outputPath}" -F "uKey=${userkey}" -F "_api_key=${apikey}" -F "updateDescription=${MSG}" -F "installType=${installType}" -F "password=${PASSWORD}" https://qiniu-storage.pgyer.com/apiv1/app/upload`
         res=$(echo ${res} | sed ':a;N;$!ba;s/\n/ /g')
         local code=`echo ${res}| jq .code`
-        # echo res:${res}
+#        echo res:${res}
         # echo code:${code}
         if [[ ${code} == "0" ]]; then
             echo
@@ -214,6 +214,7 @@ function pgyerUpload() {
             break
         else
             echo
+            echo res:${res}
             if [[ ${i} == ${retryCount} ]]; then
                 echo "\033[31m ----------------------upload${retryCount}次失败，请确认网络环境畅通后重试---------------------------\033[0m"
             else
