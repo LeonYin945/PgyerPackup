@@ -147,6 +147,13 @@ def generate_ipa(exportMethod,options)
     use_automatic_signing: false
   )
 
+  update_project_provisioning(
+	  xcodeproj: "#$projectFilePath",
+	  profile: "#{provisioningProfilePath}", # optional if you use sigh
+		target_filter: ".*#$schemeName.*",
+	  build_configuration: "Release"
+	)
+
 # 打包
   gym(
     scheme: "#$schemeName",
